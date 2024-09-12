@@ -7,6 +7,7 @@ from easydict import EasyDict
 import openai
 from openai import OpenAI
 import numpy as np
+import codecs
 import os
 from abc import ABC, abstractmethod
 import tiktoken
@@ -126,6 +127,10 @@ class OpenAIModel(ModelBackend):
 
         string = "\n".join([message["content"] for message in messages])
         encoding = tiktoken.encoding_for_model(self.model_type)
+        f = codecs.open('f:/repos/ChatDev/chat_log.txt', 'a', 'utf-8')
+        f.write("="*10+"\nprompt:\n")
+        f.write(encoding.encode(string))
+
         num_prompt_tokens = len(encoding.encode(string))
         gap_between_send_receive = 15 * len(messages)
         num_prompt_tokens += gap_between_send_receive
@@ -152,6 +157,9 @@ class OpenAIModel(ModelBackend):
         logit_bias = {},
         ).model_dump()
         response_text = response['choices'][0]['message']['content']
+        f.write("----------\nresponse:\n")
+        f.write(response_text)
+        f.close()
 
 
 
